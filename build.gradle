@@ -1,0 +1,57 @@
+plugins {
+  id 'java'
+  id 'idea'
+  id 'org.springframework.boot' version '2.7.5'
+  id 'com.github.davidmc24.gradle.plugin.avro' version '1.3.0'
+}
+
+group 'com.kafka.cloud.stream'
+version '0.0.1'
+
+ext {
+  springBootVersion = '2.7.5'
+  springIntegrationVersion = '5.5.14'
+
+  avroVersion = '1.11.1'
+  springKafkaVersion = '2.9.0'
+  springKafkaBinderVersion = '3.2.4'
+  confluentKafkaAvroVersion = '7.2.2'
+
+  lombokVersion = '1.18.24'
+  testcontainersVersion = '1.17.4'
+
+  set('log4j2.version', '2.17.2')
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  maven {
+    url "https://packages.confluent.io/maven/"
+  }
+}
+
+dependencies {
+  implementation "org.springframework.boot:spring-boot-starter:${springBootVersion}"
+  implementation "org.springframework.boot:spring-boot-starter-validation:${springBootVersion}"
+
+  implementation "org.springframework.cloud:spring-cloud-stream-binder-kafka:${springKafkaBinderVersion}"
+  implementation "org.springframework.kafka:spring-kafka:${springKafkaVersion}"
+  implementation "org.apache.avro:avro:${avroVersion}"
+  implementation "io.confluent:kafka-avro-serializer:${confluentKafkaAvroVersion}"
+
+  implementation "org.projectlombok:lombok:${lombokVersion}"
+  annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+  testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+  testImplementation "org.springframework.integration:spring-integration-test:${springIntegrationVersion}"
+
+  testImplementation "org.testcontainers:kafka:${testcontainersVersion}"
+}
+
+idea {
+  module {
+    downloadJavadoc = true
+    downloadSources = true
+  }
+}

@@ -1,6 +1,6 @@
 default:
   kafka:
-    schema-refistry: &schema-url http://localhost:8081
+    schema-registry: &schema-url http://localhost:8081
     serializer: &avro-serializer io.confluent.kafka.serializers.KafkaAvroSerializer
     deserializer: &avro-deserializer io.confluent.kafka.serializers.KafkaAvroDeserializer
     processing-topic: &processing-topic message.processing

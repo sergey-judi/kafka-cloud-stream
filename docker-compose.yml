@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.5.2
+    container_name: kafka-zookeeper
+    expose:
+      - "2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    networks:
+      - kafka-local
+  
+  kafka:
+    image: confluentinc/cp-kafka:5.5.2
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_SCHEMA_REGISTRY_URL: schema-registry:8081
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG4J_ROOT_LOGLEVEL: ERROR
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-local
+  
+  # https://github.com/robcowart/docker_compose_cookbook/blob/master/confluent_schema-registry/docker-compose.yml
+  schema-registry:
+    image: confluentinc/cp-schema-registry:5.5.2
+    container_name: schema-registry
+    ports:
+     - "8081:8081"
+    environment: 
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:2181
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEMA_REGISTRY_AVRO_COMPATIBILITY_LEVEL: backward
+    depends_on: 
+      - zookeeper
+      - kafka
+    networks:
+      - kafka-local
+
+  # https://github.com/redpanda-data/console/blob/master/docs/config/console.yaml
+  redpanda:
+    image: vectorized/console:v2.0.3
+    restart: always
+    container_name: redpanda
+    ports:
+      - "8080:8080"
+    environment: 
+      KAFKA_BROKERS: kafka:29092
+      KAFKA_SCHEMAREGISTRY_ENABLED: "true"
+      KAFKA_SCHEMAREGISTRY_URLS: http://schema-registry:8081
+    depends_on:
+      - schema-registry
+    networks:
+      - kafka-local
+
+networks: 
+  kafka-local:

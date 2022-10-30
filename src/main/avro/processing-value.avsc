@@ -1,0 +1,12 @@
+{
+  "name": "ProcessingValue",
+  "type": "record",
+  "namespace": "com.kafka.processing.avro.model",
+  "doc": "Sample object used as a kafka message value",
+  "fields": [
+    {
+      "name": "processingTimeMillis",
+      "type": "long"
+    }
+  ]
+}

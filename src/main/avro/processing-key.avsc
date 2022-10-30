@@ -1,0 +1,17 @@
+{
+  "name": "ProcessingKey",
+  "type": "record",
+  "namespace": "com.kafka.processing.avro.model",
+  "doc": "Sample object used as a kafka message key",
+  "fields": [
+    {
+      "name": "operator",
+      "type": "string"
+    },
+
+    {
+      "name": "client",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+default:
+  kafka:
+    schema-refistry: &schema-url http://localhost:8081
+    serializer: &avro-serializer io.confluent.kafka.serializers.KafkaAvroSerializer
+    deserializer: &avro-deserializer io.confluent.kafka.serializers.KafkaAvroDeserializer
+    processing-topic: &processing-topic message.processing
+    group-id: &consumer-group-id kafka-cloud-stream.message
+
+application:
+  data:
+    random-value-bound: 100
+    operators:
+      - Vodafone
+      - Kyivstar
+      - Lifecell
+    clients:
+      - 050-123-45-67
+      - 067-987-65-43
+      - 063-345-67-89
+
+spring:
+  integration:
+    poller:
+      fixed-delay: 3s
+  cloud:
+    stream:
+      default:
+        producer:
+          use-native-encoding: true
+        consumer:
+          use-native-encoding: true
+      kafka:
+        binder:
+          brokers: localhost
+          producer-properties:
+            key.serializer: *avro-serializer
+            value.serializer: *avro-serializer
+            schema.registry.url: *schema-url
+          consumer-properties:
+            key.deserializer: *avro-deserializer
+            value.deserializer: *avro-deserializer
+            schema.registry.url: *schema-url
+        bindings:
+          kafka-message-consumer-in-0:
+            consumer:
+              auto-rebalance-enabled: true
+              reset-offsets: true
+              start-offset: earliest
+      bindings:
+        kafka-message-producer-out-0:
+          destination: *processing-topic
+        kafka-message-consumer-in-0:
+          destination: *processing-topic
+          group: *consumer-group-id
+      function:
+        definition: >-
+          kafka-message-producer;
+          kafka-message-consumer
+
+logging:
+  pattern:
+    input: "*-in-*"
+    output: "*-out-*"

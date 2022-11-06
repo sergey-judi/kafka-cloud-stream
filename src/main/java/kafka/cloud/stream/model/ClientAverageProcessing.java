@@ -9,7 +9,8 @@ public class ClientAverageProcessing {
   private long processedNumber = 0;
 
   public void update(long newlyProcessedTime) {
-    this.processingTimeMillis = this.processingTimeMillis + newlyProcessedTime / (double) ++this.processedNumber;
+    this.processingTimeMillis =
+        (this.processedNumber * this.processingTimeMillis + newlyProcessedTime) / ++this.processedNumber;
   }
 
 }
